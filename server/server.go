@@ -63,7 +63,7 @@ func New(
 	{
 		// Use the session and our custom user middleware for the API
 		groupApi.Use(
-			gin.CustomRecovery(panicToJSONError),
+			gin.CustomRecoveryWithWriter(nil, panicToJSONError),
 			sessions.Sessions(sessionName, store),
 			s.loadUser,
 		)

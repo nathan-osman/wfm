@@ -1,15 +1,21 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/howeyc/gopass"
 	"github.com/nathan-osman/wfm/db"
 	"github.com/nathan-osman/wfm/server"
 	"github.com/urfave/cli/v2"
 )
+
+type contextVal string
+
+const contextDB contextVal = "db"
 
 func main() {
 	app := &cli.App{
@@ -33,14 +39,56 @@ func main() {
 				Usage:   "HTTP address to listen on",
 			},
 		},
+		Before: func(c *cli.Context) error {
+			conn, err := db.New(c.String("db-path"))
+			c.Context = context.WithValue(c.Context, contextDB, conn)
+			return err
+		},
+		After: func(c *cli.Context) error {
+			c.Context.Value(contextDB).(*db.Conn).Close()
+			return nil
+		},
+		Commands: []*cli.Command{
+			{
+				Name:  "createuser",
+				Usage: "create a new user account",
+				Action: func(c *cli.Context) error {
+
+					// Grab the database and prepare to create a new user
+					var (
+						conn = c.Context.Value(contextDB).(*db.Conn)
+						u    = &db.User{}
+					)
+
+					// Prompt for the email
+					fmt.Print("Email? ")
+					fmt.Scanln(&u.Email)
+
+					// Prompt for the password, hiding the input
+					fmt.Print("Password? ")
+					p, err := gopass.GetPasswd()
+					if err != nil {
+						return err
+					}
+					if err := u.SetPassword(string(p)); err != nil {
+						return err
+					}
+
+					// Create the user
+					if err := conn.Save(u).Error; err != nil {
+						return err
+					}
+
+					fmt.Println("New user created successfully!")
+
+					return nil
+				},
+			},
+		},
 		Action: func(c *cli.Context) error {
 
-			// Create the database
-			conn, err := db.New(c.String("db-path"))
-			if err != nil {
-				return err
-			}
-			defer conn.Close()
+			// Grab the database
+			conn := c.Context.Value(contextDB).(*db.Conn)
 
 			// Create the server
 			s, err := server.New(
