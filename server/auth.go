@@ -25,3 +25,10 @@ func (s *Server) loadUser(c *gin.Context) {
 	}
 	c.Next()
 }
+
+func (s *Server) requireUser(c *gin.Context) {
+	if _, exists := c.Get(contextUser); !exists {
+		panic("you must be logged in to view this page")
+	}
+	c.Next()
+}

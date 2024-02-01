@@ -9,8 +9,7 @@ import (
 // User corresponds to a user that can login to the admin page.
 type User struct {
 	ID       int64  `gorm:"primaryKey" json:"id"`
-	Email    string `gorm:"not null" json:"email"`
-	Username string `gorm:"not null" json:"username"`
+	Email    string `gorm:"not null,uniqueIndex" json:"email"`
 	Password string `gorm:"not null" json:"-"`
 }
 
