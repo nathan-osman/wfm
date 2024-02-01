@@ -7,7 +7,9 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/nathan-osman/wfm/admin"
 	"github.com/nathan-osman/wfm/db"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -53,11 +55,27 @@ func New(
 		HttpOnly: true,
 	})
 
-	// Use the session and our custom user middleware
-	r.Use(
-		sessions.Sessions(sessionName, store),
-		s.loadUser,
-	)
+	// Serve the static files from /admin
+	groupAdmin := r.Group("/admin")
+	{
+		groupAdmin.Use(
+			static.Serve(
+				"/",
+				admin.EmbedFileSystem{
+					FileSystem: http.FS(admin.Content),
+				},
+			),
+		)
+	}
+
+	// Use the session and our custom user middleware for the API
+	groupApi := r.Group("/api")
+	{
+		groupApi.Use(
+			sessions.Sessions(sessionName, store),
+			s.loadUser,
+		)
+	}
 
 	//...
 
