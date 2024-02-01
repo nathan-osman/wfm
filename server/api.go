@@ -41,3 +41,11 @@ func (s *Server) apiLogout(c *gin.Context) {
 	}
 	c.Status(http.StatusNoContent)
 }
+
+func (s *Server) apiFolders(c *gin.Context) {
+	v := []*db.Folder{}
+	if err := s.conn.Find(&v).Error; err != nil {
+		panic(err)
+	}
+	c.JSON(http.StatusOK, v)
+}

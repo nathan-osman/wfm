@@ -75,6 +75,11 @@ func New(
 		{
 			groupAuthApi.Use(s.requireUser)
 			groupAuthApi.POST("/logout", s.apiLogout)
+
+			groupAuthFoldersApi := groupAuthApi.Group("/folders")
+			{
+				groupAuthFoldersApi.GET("", s.apiFolders)
+			}
 		}
 	}
 
