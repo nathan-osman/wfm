@@ -89,7 +89,9 @@ function ApiProvider(props: PropsWithChildren) {
       {
         isLoaded ?
           props.children :
-          <Spinner />
+          <div className="grow h-full">
+            <Spinner />
+          </div>
       }
     </ApiContext.Provider>
   )

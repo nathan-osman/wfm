@@ -1,6 +1,6 @@
 export default function Spinner() {
   return (
-    <div className="grow h-full flex gap-x-4 items-center justify-center">
+    <div className="flex gap-x-4 items-center justify-center">
       <div className="text-4xl">
         <i className="fa-solid fa-cog fa-spin"></i>
       </div>
