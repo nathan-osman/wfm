@@ -4,6 +4,7 @@ export default function Textarea(props: TextareaHTMLAttributes<HTMLTextAreaEleme
   return (
     <textarea
       className="w-full border border-gray-300 p-2"
+      rows={8}
       {...props}
     />
   )
