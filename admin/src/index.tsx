@@ -5,6 +5,7 @@ import {
   createBrowserRouter,
 } from 'react-router-dom'
 import App from './components/App'
+import { foldersLoader } from './components/Folders'
 import Home from './routes/Home'
 import Login from './routes/Login'
 import '@fontsource/montserrat'
@@ -20,6 +21,7 @@ const router = createBrowserRouter(
         {
           path: '',
           element: <Home />,
+          loader: foldersLoader,
         },
         {
           path: 'login',

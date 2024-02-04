@@ -1,32 +1,25 @@
-import { useEffect, useState } from 'react'
-import { useApi } from '../lib/api'
-import { useDialog } from '../lib/dialog'
+import { useLoaderData, useNavigate } from 'react-router-dom'
 import Button from './form/Button'
 import Field from './form/Field'
 import { Folder, FolderSchema } from '../types/folders'
+import { apiGet } from '../lib/api'
+
+export async function foldersLoader(): Promise<Folder[]> {
+  return apiGet(FolderSchema.array(), '/api/folders')
+}
 
 export default function Folders() {
 
-  const api = useApi()
-  const dialog = useDialog()
+  const navigate = useNavigate()
 
-  const [folders, setFolders] = useState<Folder[] | null>(null)
-
-  useEffect(() => {
-    api.get(FolderSchema.array(), '/api/folders')
-      .then(v => setFolders(v))
-  }, [])
-
-  function handleAddNew() {
-    //...
-  }
+  const folders = useLoaderData() as Folder[]
 
   return (
     <div className="bg-gray-100 p-4 min-w-64">
       <div className="font-bold mb-2">
         Folders
       </div>
-      <div>
+      <div className="my-4">
         {
           folders !== null ?
             (
@@ -44,9 +37,10 @@ export default function Folders() {
       <Field>
         <Button
           type="button"
-          onClick={handleAddNew}
+          primary={true}
+          onClick={() => navigate('/folders/create')}
         >
-          Add New
+          Create
         </Button>
       </Field>
     </div>
