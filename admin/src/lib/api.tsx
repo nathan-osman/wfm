@@ -21,6 +21,7 @@ type ApiContextType = {
     value: any,
   ) => Promise<z.TypeOf<T>>
   login: (email: string, password: string) => Promise<void>
+  logout: () => Promise<void>
 }
 
 const ApiContext = createContext<ApiContextType | null>(null)
@@ -69,6 +70,10 @@ function ApiProvider(props: PropsWithChildren) {
     login: async function (email: string, password: string): Promise<void> {
       return apiContext.post(z.null(), '/api/login', { email, password })
         .then(() => setIsLoggedIn(true))
+    },
+    logout: async function (): Promise<void> {
+      return apiContext.post(z.null(), '/api/logout', null)
+        .then(() => setIsLoggedIn(false))
     },
   }
 
