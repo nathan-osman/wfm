@@ -80,6 +80,7 @@ func New(
 			groupAuthFoldersApi := groupAuthApi.Group("/folders")
 			{
 				groupAuthFoldersApi.GET("", s.apiFolders)
+				groupAuthFoldersApi.POST("/create", s.apiFolderCreateEdit)
 				groupAuthFoldersApi.GET("/:folderID", s.apiFolder)
 			}
 		}

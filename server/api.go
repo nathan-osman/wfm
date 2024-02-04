@@ -54,6 +54,25 @@ func (s *Server) apiFolders(c *gin.Context) {
 	c.JSON(http.StatusOK, v)
 }
 
+type apiFolderCreateParams struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+func (s *Server) apiFolderCreateEdit(c *gin.Context) {
+	v := &apiFolderCreateParams{}
+	if err := c.ShouldBindJSON(v); err != nil {
+		panic(err)
+	}
+	f := db.NewFolder()
+	f.Name = v.Name
+	f.Description = v.Description
+	if err := s.conn.Save(f).Error; err != nil {
+		panic(err)
+	}
+	c.Status(http.StatusNoContent)
+}
+
 func (s *Server) apiFolder(c *gin.Context) {
 	v := &db.Folder{}
 	if err := s.conn.First(v, "id = ?", c.Param("folderID")).Error; err != nil {
