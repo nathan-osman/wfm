@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom'
 import App from './components/App'
 import { foldersLoader } from './components/Folders'
+import CreateEditFolder, { createEditFolderLoader } from './routes/CreateEditFolder'
 import Home from './routes/Home'
 import Login from './routes/Login'
 import '@fontsource/montserrat'
@@ -22,6 +23,17 @@ const router = createBrowserRouter(
           path: '',
           element: <Home />,
           loader: foldersLoader,
+          children: [
+            {
+              path: 'folders/create',
+              element: <CreateEditFolder />,
+            },
+            {
+              path: 'folders/:folderId/edit',
+              element: <CreateEditFolder />,
+              loader: createEditFolderLoader,
+            },
+          ],
         },
         {
           path: 'login',
