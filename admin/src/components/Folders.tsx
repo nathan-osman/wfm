@@ -12,7 +12,11 @@ export default function Folders() {
 
   const navigate = useNavigate()
 
-  const folders = useLoaderData() as Folder[]
+  const folders = (useLoaderData() as Folder[]).sort((a, b) => {
+    if (a.name > b.name) return 1
+    if (a.name < b.name) return -1
+    return 0
+  })
 
   return (
     <div className="bg-gray-100 p-4 min-w-64">

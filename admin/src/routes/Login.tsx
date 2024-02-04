@@ -21,7 +21,7 @@ export default function Login() {
   return (
     <>
       <div className="bg-gray-300 grow h-full flex items-center justify-center">
-        <div className="bg-white lg:w-[400px] shadow-2xl p-4">
+        <div className="bg-white lg:w-[320px] shadow-2xl p-4">
           <div className="text-2xl mb-4">Login</div>
           <form onSubmit={handleSubmit}>
             {error !== null &&
