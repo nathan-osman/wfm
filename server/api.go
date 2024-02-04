@@ -53,3 +53,11 @@ func (s *Server) apiFolders(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, v)
 }
+
+func (s *Server) apiFolder(c *gin.Context) {
+	v := &db.Folder{}
+	if err := s.conn.First(v, "id = ?", c.Param("folderID")).Error; err != nil {
+		panic(err)
+	}
+	c.JSON(http.StatusOK, v)
+}
