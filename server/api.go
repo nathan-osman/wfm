@@ -13,6 +13,10 @@ type apiLoginParams struct {
 	Password string `json:"password"`
 }
 
+func (s *Server) apiTest(c *gin.Context) {
+	c.Status(http.StatusNoContent)
+}
+
 func (s *Server) apiLogin(c *gin.Context) {
 	v := &apiLoginParams{}
 	if err := c.ShouldBindJSON(v); err != nil {
