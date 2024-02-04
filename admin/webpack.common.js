@@ -3,7 +3,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   output: {
-    publicPath: '/admin',
+    filename: '[name].[contenthash].js',
+    publicPath: '/admin/',
   },
   module: {
     rules: [

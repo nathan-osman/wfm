@@ -5,10 +5,10 @@ import {
   useEffect,
   useState,
 } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import Spinner from '../components/Spinner'
 import { ErrorSchema } from '../types/error'
-import { Login } from '../components/Login'
 
 type ApiContextType = {
   get: <T extends z.ZodTypeAny>(
@@ -28,16 +28,17 @@ const ApiContext = createContext<ApiContextType | null>(null)
 
 function ApiProvider(props: PropsWithChildren) {
 
-  const [isLoaded, setIsLoaded] = useState<boolean>(false)
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+  const navigate = useNavigate()
 
-  const _fetch = async function <T>(url: string, init: RequestInit = {}): Promise<T | null> {
+  const [isLoaded, setIsLoaded] = useState<boolean>(false)
+
+  const _fetch = async function <T>(url: string, init: RequestInit = {}): Promise<T | undefined> {
     const response = await fetch(url, init)
     if (!response.ok) {
       throw new Error(ErrorSchema.parse(await response.json()).error)
     }
     if (response.status === 204) {
-      return null
+      return
     }
     return await response.json()
   }
@@ -68,30 +69,27 @@ function ApiProvider(props: PropsWithChildren) {
       )
     },
     login: async function (email: string, password: string): Promise<void> {
-      return apiContext.post(z.null(), '/api/login', { email, password })
-        .then(() => setIsLoggedIn(true))
+      return apiContext.post(z.void(), '/api/login', { email, password })
+        .then(() => navigate('/'))
     },
     logout: async function (): Promise<void> {
-      return apiContext.post(z.null(), '/api/logout', null)
-        .then(() => setIsLoggedIn(false))
+      return apiContext.post(z.void(), '/api/logout', null)
+        .then(() => navigate('/login'))
     },
   }
 
   useEffect(() => {
-    apiContext.get(z.null(), '/api/test')
-      .then(() => setIsLoggedIn(true))
-      .catch(() => { })
+    apiContext.get(z.void(), '/api/test')
+      .catch(() => navigate('/login'))
       .finally(() => setIsLoaded(true))
   }, [])
 
   return (
     <ApiContext.Provider value={apiContext}>
       {
-        isLoaded ? (
-          isLoggedIn ?
-            props.children :
-            <Login />
-        ) : <Spinner />
+        isLoaded ?
+          props.children :
+          <Spinner />
       }
     </ApiContext.Provider>
   )

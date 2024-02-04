@@ -1,11 +1,10 @@
 import { FormEvent, useState } from 'react'
 import { useApi } from '../lib/api'
-import Field from './form/Field'
-import Input from './form/Input'
-import Button from './form/Button'
+import Button from '../components/form/Button'
+import Field from '../components/form/Field'
+import Input from '../components/form/Input'
 
-
-export function Login() {
+export default function Login() {
 
   const api = useApi()
 
@@ -48,7 +47,12 @@ export function Login() {
               />
             </Field>
             <Field>
-              <Button type="submit">Login</Button>
+              <Button
+                type="submit"
+                primary={true}
+              >
+                Login
+              </Button>
             </Field>
           </form>
         </div>
