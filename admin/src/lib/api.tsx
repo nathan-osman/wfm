@@ -2,9 +2,13 @@ import {
   PropsWithChildren,
   createContext,
   useContext,
+  useEffect,
+  useState,
 } from 'react'
 import { z } from 'zod'
+import Spinner from '../components/Spinner'
 import { ErrorSchema } from '../types/error'
+import { Login } from '../components/Login'
 
 type ApiContextType = {
   get: <T extends z.ZodTypeAny>(
@@ -16,16 +20,23 @@ type ApiContextType = {
     url: string,
     value: any,
   ) => Promise<z.TypeOf<T>>
+  login: (email: string, password: string) => Promise<void>
 }
 
 const ApiContext = createContext<ApiContextType | null>(null)
 
 function ApiProvider(props: PropsWithChildren) {
 
-  const _fetch = async function <T>(url: string, init: RequestInit = {}): Promise<T> {
+  const [isLoaded, setIsLoaded] = useState<boolean>(false)
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+
+  const _fetch = async function <T>(url: string, init: RequestInit = {}): Promise<T | null> {
     const response = await fetch(url, init)
     if (!response.ok) {
       throw new Error(ErrorSchema.parse(await response.json()).error)
+    }
+    if (response.status === 204) {
+      return null
     }
     return await response.json()
   }
@@ -55,11 +66,28 @@ function ApiProvider(props: PropsWithChildren) {
         ),
       )
     },
+    login: async function (email: string, password: string): Promise<void> {
+      return apiContext.post(z.null(), '/api/login', { email, password })
+        .then(() => setIsLoggedIn(true))
+    },
   }
+
+  useEffect(() => {
+    apiContext.get(z.null(), '/api/test')
+      .then(() => setIsLoggedIn(true))
+      .catch(() => { })
+      .finally(() => setIsLoaded(true))
+  }, [])
 
   return (
     <ApiContext.Provider value={apiContext}>
-      {props.children}
+      {
+        isLoaded ? (
+          isLoggedIn ?
+            props.children :
+            <Login />
+        ) : <Spinner />
+      }
     </ApiContext.Provider>
   )
 }
